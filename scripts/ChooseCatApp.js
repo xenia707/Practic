@@ -1,3 +1,7 @@
+import {Cat} from "/classes/Cat.js";
+import {User} from "/classes/User.js";
+import {Modal} from "/classes/Modal.js";
+
 class ChooseCatApp {
   constructor() {
     this.currentUser = User.loadFromStorage();
@@ -9,6 +13,8 @@ class ChooseCatApp {
     this.setupEventListeners();
     this.updateUI();
   }
+  
+
 
   initModals() {
     this.modals = {

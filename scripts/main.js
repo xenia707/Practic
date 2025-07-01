@@ -1,4 +1,5 @@
-// Запускаем приложение после загрузки DOM
+import {ChooseCatApp} from "ChooseCatApp.js"
+
 document.addEventListener('DOMContentLoaded', () => {
   new ChooseCatApp();
 });
