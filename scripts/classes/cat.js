@@ -1,4 +1,5 @@
-export default class Cat {
+// Класс для работы с котиками
+class Cat {
   constructor(name, image) {
     this.name = name;
     this.image = image;

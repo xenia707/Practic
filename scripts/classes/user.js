@@ -1,4 +1,4 @@
-export default class User {
+class User {
   constructor(username) {
     this.username = username;
     this.cats = [];
@@ -30,7 +30,6 @@ export default class User {
   hasCat(cat) {
     return this.cats.some(c => c.name === cat.name && c.image === cat.image);
   }
-
   clearData() {
     localStorage.removeItem(`userCats_${this.username}`);
     localStorage.removeItem('currentUser');
