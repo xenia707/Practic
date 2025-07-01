@@ -1,6 +1,6 @@
-import {Cat} from "/classes/Cat.js";
-import {User} from "/classes/User.js";
-import {Modal} from "/classes/Modal.js";
+import { Cat } from "/classes/Cat.js";
+import { User } from "/classes/User.js";
+import { Modal } from "/classes/Modal.js";
 
 class ChooseCatApp {
   constructor() {
@@ -206,3 +206,5 @@ class ChooseCatApp {
     });
   }
 }
+
+export {ChooseCatApp};

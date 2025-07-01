@@ -36,3 +36,5 @@ class User {
     this.cats = [];
   }
 }
+
+export {User};

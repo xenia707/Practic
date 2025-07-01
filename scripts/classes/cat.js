@@ -13,3 +13,5 @@ class Cat {
     ];
   }
 }
+
+export {Cat};
