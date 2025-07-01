@@ -1,6 +1,6 @@
 // Класс для работы с котиками
 class Cat {
-  constructor(id, name, image) {
+  constructor(name, image) {
     this.name = name;
     this.image = image;
   }
