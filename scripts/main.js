@@ -1,160 +1,242 @@
-document.addEventListener('DOMContentLoaded', () => {
-  // ========== DOM Элементы ==========
-  const loginBtn = document.getElementById('loginBtn');
-  const createBtn = document.getElementById('createBtn');
-  const chooseBtn = document.getElementById('chooseBtn');
-  const showCatsBtn = document.getElementById('showCatsBtn');
-  const loginModal = document.getElementById('loginModal');
-  const createCatModal = document.getElementById('createCatModal');
-  const chooseCatModal = document.getElementById('chooseCatModal');
-  const myCatsModal = document.getElementById('myCatsModal');
-  const confirmLogin = document.getElementById('confirmLogin');
-  const saveCatBtn = document.getElementById('saveCatBtn');
-  const saveSelectedCatBtn = document.getElementById('saveSelectedCatBtn');
-  const availableCats = document.getElementById('availableCats');
-  const myCatsList = document.getElementById('myCatsList');
-  const catImage = document.getElementById('catImage');
-
-  const defaultCats = [
-    { id: 1, name: 'Вася', image: 'cot.jpg' },
-    { id: 2, name: 'Булка', image: 'cot2.jpg' },
-    { id: 3, name: 'Бусинка', image: 'cot3.jpg' }
-  ];
-
-  let currentUser = localStorage.getItem('currentUser');
-  let selectedImage = 'cot.jpg';
-  let selectedCat = null;
-
-  if (currentUser) {
-    loginBtn.textContent = 'Log out';
-    showCatsBtn.style.display = 'inline-block';
+// Класс для работы с котиками
+class Cat {
+  constructor(id, name, image) {
+    this.name = name;
+    this.image = image;
   }
 
-  loginBtn.addEventListener('click', toggleLogin);
-  confirmLogin.addEventListener('click', handleLogin);
-  createBtn.addEventListener('click', showCreateModal);
-  chooseBtn.addEventListener('click', showChooseModal);
-  showCatsBtn.addEventListener('click', showMyCatsModal);
-  saveCatBtn.addEventListener('click', saveNewCat);
-  saveSelectedCatBtn.addEventListener('click', saveSelectedCat);
+  static getDefaultCats() {
+    return [
+      new Cat('Вася', 'cot.jpg'),
+      new Cat('Булка', 'cot2.jpg'),
+      new Cat('Бусинка', 'cot3.jpg')
+    ];
+  }
+}
 
-  // выбор фотки
-  document.querySelectorAll('.cat-option img').forEach(img => {
-    img.addEventListener('click', function() {
-      document.querySelectorAll('.cat-option img').forEach(i => i.classList.remove('selected'));
-      this.classList.add('selected');
-      selectedImage = this.dataset.img;
-    });
-  });
+class User {
+  constructor(username) {
+    this.username = username;
+    this.cats = [];
+  }
 
-  //закрытие окон
-  document.querySelectorAll('.modal').forEach(modal => {
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        modal.style.display = 'none';
+  saveToStorage() {
+    localStorage.setItem(`userCats_${this.username}`, JSON.stringify(this.cats));
+    localStorage.setItem('currentUser', this.username);
+  }
+
+  static loadFromStorage() {
+    const username = localStorage.getItem('currentUser');
+    if (!username) return null;
+    
+    const user = new User(username);
+    user.cats = JSON.parse(localStorage.getItem(`userCats_${username}`)) || [];
+    return user;
+  }
+
+  addCat(cat) {
+    if (!this.hasCat(cat)) {
+      this.cats.push(cat);
+      this.saveToStorage();
+      return true;
+    }
+    return false;
+  }
+
+  hasCat(cat) {
+    return this.cats.some(c => c.name === cat.name && c.image === cat.image);
+  }
+  clearData() {
+    localStorage.removeItem(`userCats_${this.username}`);
+    localStorage.removeItem('currentUser');
+    this.cats = [];
+  }
+}
+
+class Modal {
+  constructor(modalId) {
+    this.modal = document.getElementById(modalId);
+    this.setupEvents();
+  }
+
+  show() {
+    this.modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  }
+
+  hide() {
+    this.modal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  setupEvents() {
+    this.modal.addEventListener('click', (e) => {
+      if (e.target === this.modal) {
+        this.hide();
       }
     });
-  });
+  }
+}
 
+class ChooseCatApp {
+  constructor() {
+    this.currentUser = User.loadFromStorage();
+    this.selectedCat = null;
+    this.selectedImage = 'cot.jpg';
+    
+    this.initModals();
+    this.initElements();
+    this.setupEventListeners();
+    this.updateUI();
+  }
 
-  function toggleLogin() {
-    if (currentUser) {
-      localStorage.removeItem('currentUser');
-      currentUser = null;
-      loginBtn.textContent = 'Log in';
-      showCatsBtn.style.display = 'none';
+  initModals() {
+    this.modals = {
+      login: new Modal('loginModal'),
+      createCat: new Modal('createCatModal'),
+      chooseCat: new Modal('chooseCatModal'),
+      myCats: new Modal('myCatsModal')
+    };
+  }
+
+  initElements() {
+    this.elements = {
+      loginBtn: document.getElementById('loginBtn'),
+      createBtn: document.getElementById('createBtn'),
+      chooseBtn: document.getElementById('chooseBtn'),
+      showCatsBtn: document.getElementById('showCatsBtn'),
+      confirmLogin: document.getElementById('confirmLogin'),
+      saveCatBtn: document.getElementById('saveCatBtn'),
+      saveSelectedCatBtn: document.getElementById('saveSelectedCatBtn'),
+      availableCats: document.getElementById('availableCats'),
+      myCatsList: document.getElementById('myCatsList'),
+      catImage: document.getElementById('catImage'),
+      usernameInput: document.getElementById('username'),
+      newCatName: document.getElementById('newCatName'),
+      clearDataBtn: document.getElementById('clearDataBtn')
+    };
+  }
+  setupEventListeners() {
+    this.elements.loginBtn.addEventListener('click', () => this.toggleLogin());
+    this.elements.confirmLogin.addEventListener('click', () => this.handleLogin());
+    this.elements.createBtn.addEventListener('click', () => this.showCreateModal());
+    this.elements.chooseBtn.addEventListener('click', () => this.showChooseModal());
+    this.elements.showCatsBtn.addEventListener('click', () => this.showMyCatsModal());
+    this.elements.saveCatBtn.addEventListener('click', () => this.saveNewCat());
+    this.elements.saveSelectedCatBtn.addEventListener('click', () => this.saveSelectedCat());
+    this.elements.clearDataBtn.addEventListener('click', () => this.clearData());
+
+    document.querySelectorAll('.cat-option img').forEach(img => {
+      img.addEventListener('click', () => {
+        document.querySelectorAll('.cat-option img').forEach(i => i.classList.remove('selected'));
+        img.classList.add('selected');
+        this.selectedImage = img.dataset.img;
+      });
+    });
+  }
+
+  updateUI() {
+    if (this.currentUser) {
+      this.elements.loginBtn.textContent = 'Log out';
+      this.elements.showCatsBtn.style.display = 'inline-block';
     } else {
-      loginModal.style.display = 'block';
+      this.elements.loginBtn.textContent = 'Log in';
+      this.elements.showCatsBtn.style.display = 'none';
+    }
+  }
+  // Вход/выход
+  toggleLogin() {
+    if (this.currentUser) {
+      this.currentUser = null;
+      localStorage.removeItem('currentUser');
+      this.updateUI();
+    } else {
+      this.modals.login.show();
     }
   }
 
-  function handleLogin() {
-    const username = document.getElementById('username').value.trim();
+  // Обработка вход
+  handleLogin() {
+    const username = this.elements.usernameInput.value.trim();
     if (username) {
-      currentUser = username;
-      localStorage.setItem('currentUser', username);
-      loginModal.style.display = 'none';
-      loginBtn.textContent = 'Log out';
-      showCatsBtn.style.display = 'inline-block';
-      document.getElementById('username').value = '';
+      this.currentUser = new User(username);
+      this.currentUser.saveToStorage();
+      this.modals.login.hide();
+      this.elements.usernameInput.value = '';
+      this.updateUI();
     }
   }
 
-  function showCreateModal() {
-    if (!currentUser) {
+  showCreateModal() {
+    if (!this.currentUser) {
       alert('Пожалуйста, войдите в систему');
       return;
     }
-    document.getElementById('newCatName').value = '';
-    createCatModal.style.display = 'block';
+    this.elements.newCatName.value = '';
+    this.modals.createCat.show();
   }
 
-  function showChooseModal() {
-    chooseCatModal.style.display = 'block';
-    renderAvailableCats();
+  showChooseModal() {
+    this.renderAvailableCats();
+    this.modals.chooseCat.show();
   }
 
-  function showMyCatsModal() {
-    myCatsModal.style.display = 'block';
-    renderMyCats();
+  showMyCatsModal() {
+    this.renderMyCats();
+    this.modals.myCats.show();
   }
 
-  function saveNewCat() {
-    const catName = document.getElementById('newCatName').value.trim();
+  saveNewCat() {
+    const catName = this.elements.newCatName.value.trim();
     if (!catName) return;
 
-    const userCats = JSON.parse(localStorage.getItem(`userCats_${currentUser}`)) || [];
-    const newCat = {
-      id: Date.now(),
-      name: catName,
-      image: selectedImage
-    };
+    const newCat = new Cat(Date.now(), catName, this.selectedImage);
     
-    userCats.push(newCat);
-    localStorage.setItem(`userCats_${currentUser}`, JSON.stringify(userCats));
-    
-    document.getElementById('newCatName').value = '';
-    createCatModal.style.display = 'none';
-    alert(`Котик ${catName} сохранён!`);
+    if (this.currentUser.addCat(newCat)) {
+      this.elements.newCatName.value = '';
+      this.modals.createCat.hide();
+      alert(`Котик ${catName} сохранён!`);
+    } else {
+      alert('Такой котик уже есть в вашей коллекции!');
+    }
   }
 
-  function saveSelectedCat() {
-    if (!currentUser) {
+  saveSelectedCat() {
+    if (!this.currentUser) {
       alert('Пожалуйста, войдите в систему');
       return;
     }
     
-    if (!selectedCat) {
+    if (!this.selectedCat) {
       alert('Выберите котика для сохранения');
       return;
     }
 
-    const userCats = JSON.parse(localStorage.getItem(`userCats_${currentUser}`)) || [];
+    const catToAdd = new Cat(Date.now(), this.selectedCat.name, this.selectedCat.image);
     
-    //повторка
-    const exists = userCats.some(cat => 
-      cat.name === selectedCat.name && cat.image === selectedCat.image
-    );
-    
-    if (!exists) {
-      userCats.push({
-        id: Date.now(),
-        name: selectedCat.name,
-        image: selectedCat.image
-      });
-      localStorage.setItem(`userCats_${currentUser}`, JSON.stringify(userCats));
-      alert(`${selectedCat.name} добавлен в вашу коллекцию!`);
+    if (this.currentUser.addCat(catToAdd)) {
+      alert(`${this.selectedCat.name} добавлен в вашу коллекцию!`);
     } else {
       alert('Этот котик уже есть в вашей коллекции!');
     }
   }
 
-  function renderAvailableCats() {
-    availableCats.innerHTML = '';
-    saveSelectedCatBtn.style.display = 'none';
-    selectedCat = null;
+  clearData() {
+    if (confirm('Очистить ВСЕ сохранённые данные? Это нельзя отменить!')) {
+      localStorage.clear();
+      this.currentUser = null;
+      this.updateUI();
+      alert('Все данные очищены.');
+    }
+  }
 
-    defaultCats.forEach(cat => {
+  //рендер котиов
+  renderAvailableCats() {
+    this.elements.availableCats.innerHTML = '';
+    this.elements.saveSelectedCatBtn.style.display = 'none';
+    this.selectedCat = null;
+
+    Cat.getDefaultCats().forEach(cat => {
       const catCard = document.createElement('div');
       catCard.className = 'cat-card';
       catCard.innerHTML = `
@@ -164,48 +246,41 @@ document.addEventListener('DOMContentLoaded', () => {
       catCard.addEventListener('click', () => {
         document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('selected'));
         catCard.classList.add('selected');
-        catImage.src = `img/${cat.image}`;
-        catImage.alt = cat.name;
-        selectedCat = cat;
-        saveSelectedCatBtn.style.display = 'block';
+        this.elements.catImage.src = `img/${cat.image}`;
+        this.elements.catImage.alt = cat.name;
+        this.selectedCat = cat;
+        this.elements.saveSelectedCatBtn.style.display = 'block';
       });
-      availableCats.appendChild(catCard);
+      this.elements.availableCats.appendChild(catCard);
     });
   }
 
-  function renderMyCats() {
-    myCatsList.innerHTML = '';
+  renderMyCats() {
+    this.elements.myCatsList.innerHTML = '';
     
-    if (!currentUser) {
-      myCatsList.innerHTML = '<p>Войдите в систему</p>';
+    if (!this.currentUser) {
+      this.elements.myCatsList.innerHTML = '<p>Войдите в систему</p>';
       return;
     }
 
-    const userCats = JSON.parse(localStorage.getItem(`userCats_${currentUser}`)) || [];
-    
-    if (userCats.length === 0) {
-      myCatsList.innerHTML = '<div class="no-cats-message">У вас пока нет котиков</div>';
+    if (this.currentUser.cats.length === 0) {
+      this.elements.myCatsList.innerHTML = '<div class="no-cats-message">У вас пока нет котиков</div>';
       return;
     }
 
-    userCats.forEach(cat => {
+    this.currentUser.cats.forEach(cat => {
       const catCard = document.createElement('div');
       catCard.className = 'cat-card';
       catCard.innerHTML = `
         <img src="img/${cat.image}" alt="${cat.name}">
         <p>${cat.name}</p>
       `;
-      myCatsList.appendChild(catCard);
+      this.elements.myCatsList.appendChild(catCard);
     });
   }
-  const clearDataBtn = document.getElementById('clearDataBtn');
-  if (clearDataBtn) {
-    clearDataBtn.addEventListener('click', () => {
-      if (confirm('Очистить ВСЕ сохранённые данные? Это нельзя отменить!')) {
-        localStorage.clear();
-        alert('Все данные очищены. Страница будет перезагружена.');
-        location.reload();
-      }
-    });
-  }
+}
+
+// Запускаем приложение после загрузки DOM
+document.addEventListener('DOMContentLoaded', () => {
+  new ChooseCatApp();
 });
