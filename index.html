@@ -1,34 +1,79 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>Choosecat</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles/styles.css">
 </head>
 <body>
   <div class="container">
     <header>
       <div class="logo">Choosecat<span>.com</span></div>
       <nav>
-        <a href="#">Что-то</a>
-        <a href="#">еще</a>
-        <a href="#">надо</a>
-        <button class="lang-btn">Log in</button>
+        <button class="lang-btn" id="loginBtn">Log in</button>
+        <button class="lang-btn" id="clearDataBtn">Clear Data</button>
       </nav>
     </header>
     
     <main>
       <div class="cat-circle">
-        <img src="img/cot3.jpg" alt="Cartoon Cat" />
+        <img src="img/cot3.jpg" alt="Cartoon Cat" id="catImage">
       </div>
       <p class="subtitle">Collection</p>
       <div class="buttons">
-        <button>Create cat</button>
-        <button>Choosecat</button>
-        <button>что-то нажо придумать</button>
+        <button id="createBtn">Create cat</button>
+        <button id="chooseBtn">Choosecat</button>
+        <button id="showCatsBtn" style="display:none;">Show my cats</button>
       </div>
     </main>
   </div>
+
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <h3>Login</h3>
+      <input type="text" id="username" placeholder="Username">
+      <button id="confirmLogin">Enter</button>
+    </div>
+  </div>
+
+  <!-- окно создания котика -->
+  <div id="createCatModal" class="modal">
+    <div class="modal-content">
+      <h3>Create New Cat</h3>
+      <input type="text" id="newCatName" placeholder="Cat name">
+      <div class="cat-options">
+        <div class="cat-option">
+          <img src="img/cot.jpg" data-img="cot.jpg">
+        </div>
+        <div class="cat-option">
+          <img src="img/cot2.jpg" data-img="cot2.jpg">
+        </div>
+        <div class="cat-option">
+          <img src="img/cot3.jpg" data-img="cot3.jpg">
+        </div>
+      </div>
+      <button id="saveCatBtn" class="save-btn">Save Cat</button>
+    </div>
+  </div>
+
+  <div id="chooseCatModal" class="modal">
+    <div class="modal-content">
+      <h3>Choose a Cat</h3>
+      <div id="availableCats"></div>
+      <div class="save-btn-container">
+        <button id="saveSelectedCatBtn" class="save-btn">Save Cat</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- мои котs -->
+  <div id="myCatsModal" class="modal">
+    <div class="modal-content">
+      <h3>My Cats</h3>
+      <div id="myCatsList"></div>
+    </div>
+  </div>
+
+  <script src="scripts/main.js"></script>
 </body>
 </html>

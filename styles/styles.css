@@ -1,0 +1,204 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #a77dfd;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  background: #b289f3;
+  padding: 40px;
+  border-radius: 20px;
+  width: 600px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  text-align: center;
+  margin: 10px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+.logo span {
+  color: #ddd;
+}
+
+nav a {
+  margin-right: 10px;
+  font-size: 0.85em;
+  color: white;
+  text-decoration: none;
+}
+
+.lang-btn {
+  background: #fff;
+  color: #7645d6;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 0.85em;
+  cursor: pointer;
+}
+
+.cat-circle {
+  background: #9e6cff;
+  width: 160px;
+  height: 160px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cat-circle img {
+  width: 100px;
+  height: 100px;
+}
+
+.subtitle {
+  margin-bottom: 20px;
+  font-size: 0.95em;
+}
+
+.buttons button {
+  margin: 5px;
+  padding: 10px 20px;
+  border: 1px solid white;
+  border-radius: 20px;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background 0.3s;
+  
+}
+
+.buttons button:hover {
+  background: rgba(255,255,255,0.1);
+}
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.7);
+}
+
+.modal-content {
+  background-color: #b289f3;
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+  text-align: center;
+}
+
+.modal-content h3 {
+  margin-bottom: 20px;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  border: none;
+}
+
+.cat-options {
+  display: flex;
+  justify-content: space-between;
+  margin: 15px 0;
+}
+
+.cat-option img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+
+.cat-option img.selected {
+  border-color: #fff;
+}
+
+#availableCats, #myCatsList {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.cat-card {
+  background: rgba(255,255,255,0.2);
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.cat-card img {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+.save-btn-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.save-btn {
+  padding: 10px 20px;
+  background: #fff;
+  color: #7645d6;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+#myCatsList {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 200px; /* Чтобы было видно сообщение */
+  justify-content: center; /* Центрирование по вертикали */
+}
+
+.no-cats-message {
+  text-align: center;
+  width: 100%;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: white;
+  font-size: 1.1em;
+  margin: 20px 0;
+}
